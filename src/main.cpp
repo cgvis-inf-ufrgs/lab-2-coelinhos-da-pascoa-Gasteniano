@@ -190,9 +190,11 @@ bool g_MiddleMouseButtonPressed = false; // Análogo para botão do meio do mous
 // usuário através do mouse (veja função CursorPosCallback()). A posição
 // efetiva da câmera é calculada dentro da função main(), dentro do loop de
 // renderização.
-float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
-float g_CameraPhi = 0.3f;   // Ângulo em relação ao eixo Y
-float g_CameraDistance = 3.5f; // Distância da câmera para a origem
+// Variáveis que definem a câmera em coordenadas esféricas
+// Variáveis que definem a câmera em coordenadas esféricas (nas definições globais, fora de qualquer função)
+float g_CameraTheta = 0.0f;     
+float g_CameraPhi = 0.35f;       // Câmera olhando de cima para baixo
+float g_CameraDistance = 20.0f;  // Bem mais longe para ver o círculo maior
 
 // Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
@@ -244,7 +246,7 @@ int main(int argc, char* argv[])
     // Criamos uma janela do sistema operacional, com 800 colunas e 600 linhas
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "INF01047 - Seu Cartao - Seu Nome", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "INF01047 - 00588886 - Gustavo Azevedo da Silveira", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -364,8 +366,8 @@ int main(int argc, char* argv[])
 
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo! Veja slides 176-204 do documento Aula_09_Projecoes.pdf.
-        float nearplane = -0.1f;  // Posição do "near plane"
-        float farplane  = -10.0f; // Posição do "far plane"
+        float nearplane = -0.1f;  
+        float farplane  = -50.0f;
 
         if (g_UsePerspectiveProjection)
         {
@@ -396,28 +398,99 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(g_view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(g_projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
+// ------------------------------------------------------------------
+        // CÓDIGO SUBSTITUTO PARA A ANIMAÇÃO (COELHOS, ESFERAS E PLANO)
+        // ------------------------------------------------------------------
+        
+// Pegamos o tempo atual do GLFW
+// Pegamos o tempo atual do GLFW
+// Pegamos o tempo atual do GLFW
+        float t = glfwGetTime(); 
+
         #define SPHERE 0
         #define BUNNY  1
         #define PLANE  2
 
-        // Desenhamos o modelo da esfera
-        model = Matrix_Translate(-1.0f,0.0f,0.0f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, SPHERE);
-        DrawVirtualObject("the_sphere");
-
-        // Desenhamos o modelo do coelho
-        model = Matrix_Translate(1.0f,0.0f,0.0f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, BUNNY);
-        DrawVirtualObject("the_bunny");
-
-        // Desenhamos o plano do chão
-        model = Matrix_Translate(0.0f,-1.0f,0.0f) * Matrix_Scale(4.0f,1.0f,4.0f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        // 1. O Plano do chão
+// 1. O Plano do chão (Aumentei a escala para 25.0f para o chão ficar bem grande)
+        model = Matrix_Translate(0.0f, -1.0f, 0.0f) * Matrix_Scale(25.0f, 1.0f, 25.0f);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, PLANE);
         DrawVirtualObject("the_plane");
 
+        // 2. Os 15 Coelhos e suas Esferas
+        int num_coelhos = 15;
+        float raio_coelhos = 12.0f;    // AUMENTADO: agora o círculo é bem mais largo
+        float velocidade_roda = 0.8f;
+        
+        // Variáveis da onda senoidal
+        float freq_salto = 3.5f;       
+        float amplitude_salto = 1.5f;  
+        float altura_base = 1.5f;      
+        float PI = 3.14159265f;
+
+        for (int i = 0; i < num_coelhos; ++i)
+        {
+            // Movimento circular no plano XZ
+            float offset_angular = i * (2.0f * PI / num_coelhos);
+            float theta = t * velocidade_roda + offset_angular;
+            float x = raio_coelhos * cos(theta);
+            float z = raio_coelhos * sin(theta);
+            
+            // Movimento senoidal no eixo Y (Sobe e desce fluidamente)
+            float tempo_salto = t * freq_salto + (i * 0.6f);
+            
+            // sin() varia de -1 a 1. Multiplicado pela amplitude e somado à base,
+            // o coelho vai variar de 0.0 a 3.0 no eixo Y suavemente.
+            float y = altura_base + sin(tempo_salto) * amplitude_salto; 
+            
+            // O ciclo completo da onda seno agora é 2*PI (e não apenas PI como no quique)
+            int indice_salto = (int)(tempo_salto / (2.0f * PI));
+            float progresso_salto = (tempo_salto - indice_salto * 2.0f * PI) / (2.0f * PI);
+            
+            float angulo_mortal = 0.0f;
+            
+            // O coelho dá o mortal a cada 4 "ondas" completas
+            if (indice_salto % 4 == 0) 
+            {
+                angulo_mortal = progresso_salto * 2.0f * PI; 
+            }
+
+            // O coelho olha para a frente acompanhando o trajeto
+            float orientacao_caminho = -theta - (PI / 2.0f);
+
+            // Matriz base APENAS com a posição espacial do coelho
+            glm::mat4 model_bunny_pos = Matrix_Translate(x, y, z);
+
+            // Matriz final do Coelho
+            model = model_bunny_pos 
+                  * Matrix_Rotate_Y(orientacao_caminho) 
+                  * Matrix_Rotate_X(angulo_mortal); 
+
+            glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(g_object_id_uniform, BUNNY);
+            DrawVirtualObject("the_bunny");
+
+            // 3. As 2 Esferas orbitando na vertical (cruzando o eixo Y)
+            float raio_orbita_esfera = 1.4f;
+            float velocidade_esfera = 4.0f;
+            
+            for(int j = 0; j < 2; ++j) 
+            {
+                float defasagem = j * PI; 
+                float angulo_esfera = t * velocidade_esfera + defasagem;
+                
+                glm::mat4 model_esfera = model_bunny_pos 
+                                        * Matrix_Rotate_Y(orientacao_caminho)
+                                        * Matrix_Rotate_Z(angulo_esfera) 
+                                        * Matrix_Translate(raio_orbita_esfera, 0.0f, 0.0f)
+                                        * Matrix_Scale(0.30f, 0.15f, 0.15f); // <--- Escala NÃO-uniforme (oval)
+                                       
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model_esfera));
+                glUniform1i(g_object_id_uniform, SPHERE);
+                DrawVirtualObject("the_sphere");
+            }
+        }
         // Imprimimos na tela os ângulos de Euler que controlam a rotação do
         // terceiro cubo.
         TextRendering_ShowEulerAngles(window);
@@ -926,7 +999,7 @@ GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id)
         fprintf(stderr, "%s", output.c_str());
     }
 
-    // Os "Shader Objects" podem ser marcados para deleção após serem linkados 
+    // Os "Shader Objects" podem ser marcados para deleção após serem linkados
     glDeleteShader(vertex_shader_id);
     glDeleteShader(fragment_shader_id);
 
@@ -1023,28 +1096,26 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
     // parâmetros que definem a posição da câmera dentro da cena virtual.
     // Assim, temos que o usuário consegue controlar a câmera.
 
-    if (g_LeftMouseButtonPressed)
+if (g_LeftMouseButtonPressed)
     {
         // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
         float dx = xpos - g_LastCursorPosX;
         float dy = ypos - g_LastCursorPosY;
-    
-        // Atualizamos parâmetros da câmera com os deslocamentos
+
+        // Atualizamos parâmetros da câmera com os deslocamentos (SEM o 'float' na frente!)
         g_CameraTheta -= 0.01f*dx;
         g_CameraPhi   += 0.01f*dy;
-    
+
         // Em coordenadas esféricas, o ângulo phi deve ficar entre -pi/2 e +pi/2.
         float phimax = 3.141592f/2;
         float phimin = -phimax;
-    
+
         if (g_CameraPhi > phimax)
             g_CameraPhi = phimax;
-    
+
         if (g_CameraPhi < phimin)
             g_CameraPhi = phimin;
-    
-        // Atualizamos as variáveis globais para armazenar a posição atual do
-        // cursor como sendo a última posição conhecida do cursor.
+
         g_LastCursorPosX = xpos;
         g_LastCursorPosY = ypos;
     }
@@ -1054,11 +1125,11 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
         float dx = xpos - g_LastCursorPosX;
         float dy = ypos - g_LastCursorPosY;
-    
+
         // Atualizamos parâmetros da antebraço com os deslocamentos
         g_ForearmAngleZ -= 0.01f*dx;
         g_ForearmAngleX += 0.01f*dy;
-    
+
         // Atualizamos as variáveis globais para armazenar a posição atual do
         // cursor como sendo a última posição conhecida do cursor.
         g_LastCursorPosX = xpos;
@@ -1070,11 +1141,11 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
         float dx = xpos - g_LastCursorPosX;
         float dy = ypos - g_LastCursorPosY;
-    
+
         // Atualizamos parâmetros da antebraço com os deslocamentos
         g_TorsoPositionX += 0.01f*dx;
         g_TorsoPositionY -= 0.01f*dy;
-    
+
         // Atualizamos as variáveis globais para armazenar a posição atual do
         // cursor como sendo a última posição conhecida do cursor.
         g_LastCursorPosX = xpos;
@@ -1301,7 +1372,7 @@ void TextRendering_ShowFramesPerSecond(GLFWwindow* window)
     if ( ellapsed_seconds > 1.0f )
     {
         numchars = snprintf(buffer, 20, "%.2f fps", ellapsed_frames / ellapsed_seconds);
-    
+
         old_seconds = seconds;
         ellapsed_frames = 0;
     }
