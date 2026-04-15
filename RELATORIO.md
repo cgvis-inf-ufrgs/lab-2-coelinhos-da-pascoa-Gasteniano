@@ -6,8 +6,8 @@
 
 ## Dados do aluno
 
-- **Cartão UFRGS**: <mark>`<preencher>`</mark>
-- **Nome**: <mark>`<preencher>`</mark>
+- **Cartão UFRGS**: <mark>`00588886`</mark>
+- **Nome**: <mark>`Gustavo Azevedo da Silveira`</mark>
 
 ## Passos que eu segui para resolver o problema especificado (em formato de *"prompt"*)
 
@@ -30,20 +30,21 @@
 > - Novamente, lembre-se que você *não pode utilizar ferramentas
 >   de IA para escrever este relatório*
 
-<mark>`<preencher>`</mark>
+<mark>`Primeiro peça ao Gemini que multiplique a matriz model da esfera por valores escalares que a deformem para que se assemelhe melhor a um ovo (formato oval). Depois pedir para que o Gemini anime os coelhos e as esferas (agora ovos) no círculo, como no vídeo. Para além disso é importante "aumentar" o farplane (para um valor mais negativo), para que seja possível enxergar os coelhos mais de longe. E mudar as coordenadas, ângulo que a câmera olha e a distância (o theta, phi, e a distância), para que melhor se adeque ao ponto de visão do vídeo sendo aproximado.`</mark>
+
+<mark>`Prompts no PROMPTS.md`</mark>
 
 ## Principais dificuldades encontradas durante o desenvolvimento (formato livre)
 
-<mark>`<preencher>`</mark>
+<mark>`Não encontrei dificuldades no desenvolvimento.`</mark>
 
 ## Você acha que conseguiu resolver o problema de forma adequada?
 
-<mark>`<preencher>`</mark>
+<mark>`Sim, até onde pude perceber, os coelhos pulando e os ovos girando em volta deles ficaram bem bons e muito próximos do vídeo original.`</mark>
 
 ## Se você quiser compartilhar mais alguma coisa, coloque aqui:
 
-<mark>`<preencher>`</mark>
 
 ## Se você possui alguma sugestão para o professor sobre esta atividade, coloque aqui:
 
-<mark>`<preencher>`</mark>
+
