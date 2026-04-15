@@ -36,7 +36,7 @@ Primeiro peça ao Gemini que multiplique a matriz model da esfera por valores es
 
 ## Principais dificuldades encontradas durante o desenvolvimento (formato livre)
 
-Não encontrei dificuldades no desenvolvimento.
+Foram necessários um bocado de testes até chegar no que seria exatamente os saltos que os coelhos dão o tempo todo, em relação aos "mortais", que dão com uma frequência menor. Primeiro achei que fossem saltos e outros saltos com rotações, mas tudo funcionou melhor quando interpretei que os "saltos normais", eram na verdade a linha de rota dos coelhos, uma linha próxima a uma curva senoidal em círculo.
 
 ## Você acha que conseguiu resolver o problema de forma adequada?
 
