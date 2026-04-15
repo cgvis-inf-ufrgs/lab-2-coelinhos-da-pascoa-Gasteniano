@@ -32,7 +32,7 @@
 
 Primeiro peça ao Gemini que multiplique a matriz model da esfera por valores escalares que a deformem para que se assemelhe melhor a um ovo (formato oval). Depois pedir para que o Gemini anime os coelhos e as esferas (agora ovos) no círculo, como no vídeo. Para além disso é importante "aumentar" o farplane (para um valor mais negativo), para que seja possível enxergar os coelhos mais de longe. E mudar as coordenadas, ângulo que a câmera olha e a distância (o theta, phi, e a distância), para que melhor se adeque ao ponto de visão do vídeo sendo aproximado.
 
-Prompts no PROMPTS.md
+[os prompts detalhados estão aqui](PROMPTS.md)
 
 ## Principais dificuldades encontradas durante o desenvolvimento (formato livre)
 
